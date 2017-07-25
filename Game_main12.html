@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Game_main</title>
+<link rel="stylesheet" href="style/Game_main.css">
+<style type="text/css">
+	.downBoxImg{
+		position: absolute;
+		top: 0;
+/*		left: 0;*/
+
+	}
+/*	.downImg{
+		position: absolute;
+		top: 0;
+	}*/
+
+</style>
+</head>
+<body>
+<div id="wrap">
+	<div class="head">
+		<div id="log"></div>
+		<h3 class="title">你的鼠标有多快?</h3>
+		<p class="explain">游戏说明：“点击游戏”，随机掉下表情点中它，千万别让它掉下去！！</p>
+	</div>
+	<div class="content">
+		<div class="downBoxImg">
+			<!-- <img src="" class="downImg"/> -->
+		</div>
+		<div class="win">
+			<span class="winNum">0分</span>
+			<p>得分</p>
+		</div>
+		<div class="lose">
+			<span class="loseNum">0分</span>
+			<p>失分</p>
+		</div>
+		<a href="javascript:;" class="btn">开始游戏</a>
+	</div>
+</div>
+</body>
+</html>
+<script src="js/tool.js"></script>
+<!-- 
+需求:
+1,点击开始btn,游戏开始
+2,表情随机往下落  Math.ceil()向上取整,Math.random()随机数,setInterval(),clearInterval(),
+3,点击表情左右抖动消失得分+1/没点中下落后窗口上下抖动失分+1,失分积满10分则游戏失败!!!
+ -->
+ <script type="text/javascript">
+ 	var winNum = document.querySelector('.winNum');
+ 	var winBox = document.querySelector('.win');
+ 	var loseBox = document.querySelector('.lose');
+ 	var loseNum = document.querySelector('.loseNum');
+ 	var content = document.querySelector('.content');
+ 	var downBoxImg = document.querySelector('.downBoxImg');
+ 	var btn = document.querySelector('.btn');
+ 	var arrDownSrc = ['img/demonI.png', 'img/demonII.png', 'img/demonIII.png', 'img/demonIV.png', 'img/demonV.png'];
+ 	var bianhao = [0, 1, 2, 3, 4];
+ 	var widthMax = parseInt(getComputedStyle(content).width);
+ 	console.log(widthMax);
+ 	var winNums = 0;
+ 	var failNums= 0;
+	var a; 	
+ 	btn.onclick = function(){
+ 		Fq.animation(winBox, {left: -100},200);
+ 		Fq.animation(loseBox, {left: -100},200);
+ 		Fq.animation(btn, {bottom: -57,opacity:0},200);
+ 		down();
+ 	}
+ 	function rp(arr){ 
+      	var max = Math.max(...arr),
+            min = Math.min(...arr);
+        return Math.round(Math.random() * (max - min) + min);
+    }
+    function down(){
+ 		bianhao.sort(function (a, b){
+		    return 0.5 - Math.random(); 
+		});
+		downBoxImg.innerHTML = '<img src="'+arrDownSrc[bianhao[0]]+'"/>';
+		a = rp([20,widthMax-parseInt(getComputedStyle(downBoxImg).width)-20])
+		downBoxImg.style.right =a+'px';
+		Fq.animation(downBoxImg, {top: 354},4000,function(){
+		    if(parseInt(this.offsetTop)>=350){
+			    Fq.shake(content,'top',1,function(){
+			    	failNums++;
+			    	loseNum.innerHTML = failNums + '分';
+			    		if(downBoxImg.innerHTML !== ''){
+				    		downBoxImg.innerHTML = '';
+				    		downBoxImg.style.top = 0;
+				    	}
+				    	down();
+			    	});
+			    }
+		    });
+ 		}
+ 	downBoxImg.onclick = function(){
+    	this.style.top = this.offsetTop + 'px';
+    	this.innerHTML = '<img src="img/demonVI.png"/>';
+    	this.style.right = a+'px';
+    	window.cancelAnimationFrame(this.animation);
+    	this.animation = null;
+    	Fq.shake(this,'left',10,function(){
+    		winNums++;
+    		winNum.innerHTML = winNums + '分';
+    		downBoxImg.innerHTML = '';
+    		downBoxImg.style.top = 0;
+    		down();
+    	});
+    }
+ </script>
